@@ -1,0 +1,15 @@
+services:
+  api:
+    build: .
+    container_name: svi_api
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_VERSION=0.1.0
+      - LOG_LEVEL=INFO
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    restart: unless-stopped

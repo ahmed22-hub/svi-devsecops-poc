@@ -4,3 +4,5 @@ Simple Web Platform (FastAPI) + CI/CD (GitHub Actions) + Security/Monitoring (Wa
 
 ## CI/CD
 - GitHub Actions: tests + build image + Trivy + SBOM
+
+- Branch protection: required checks enabled

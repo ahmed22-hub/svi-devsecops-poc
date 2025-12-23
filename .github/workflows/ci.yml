@@ -35,3 +35,36 @@ jobs:
           image-ref: svi-devsecops-poc:ci
           severity: HIGH,CRITICAL
           exit-code: "0"
+  publish-status:
+    name: publish-status
+    runs-on: ubuntu-latest
+    needs: ci
+    if: always()
+    permissions:
+      statuses: write
+      contents: read
+    steps:
+      - name: Publish legacy status context "ci"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          # For PR runs: use PR head SHA. Fallback to github.sha.
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          STATE: ${{ needs.ci.result }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ "$STATE" = "success" ]; then
+            STATUS="success"
+            DESC="CI passed"
+          else
+            STATUS="failure"
+            DESC="CI failed"
+          fi
+
+          API="https://api.github.com/repos/$REPO/statuses/$SHA"
+
+          curl -sS -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "$API" \
+            -d "{\"state\":\"$STATUS\",\"context\":\"ci\",\"description\":\"$DESC\",\"target_url\":\"$RUN_URL\"}"

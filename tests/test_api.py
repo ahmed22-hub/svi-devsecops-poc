@@ -13,7 +13,7 @@ def test_health_ok():
 
 def test_version_ok():
     r = client.get("/version")
-    assert r.status_code == 200
+    assert r.status_code == 201
     data = r.json()
     assert data["name"] == APP_NAME
     assert "version" in data

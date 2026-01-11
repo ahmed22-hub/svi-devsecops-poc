@@ -20,9 +20,11 @@ jobs:
 
       - name: Add host to known_hosts
         run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+          install -m 700 -d "$HOME/.ssh"
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/known_hosts"
 
-      - name: Deploy over SSH (pull + compose up)
+      - name: Deploy over SSH
         run: |
-          ssh "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "bash -lc '/opt/devsecops/svi-devsecops-poc/scripts/deploy_remote.sh'"
+          ssh "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+          "bash -lc '/opt/devsecops/svi-devsecops-poc/scripts/deploy_remote.sh'"

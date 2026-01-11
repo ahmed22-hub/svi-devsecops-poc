@@ -18,13 +18,8 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Add host to known_hosts
-        run: |
-          install -m 700 -d "$HOME/.ssh"
-          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> "$HOME/.ssh/known_hosts"
-          chmod 600 "$HOME/.ssh/known_hosts"
-
       - name: Deploy over SSH
         run: |
-          ssh "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
-          "bash -lc '/opt/devsecops/svi-devsecops-poc/scripts/deploy_remote.sh'"
+          ssh -o StrictHostKeyChecking=no \
+              ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+              "bash -lc '/opt/devsecops/svi-devsecops-poc/scripts/deploy_remote.sh'"
